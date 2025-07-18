@@ -190,17 +190,18 @@ ax.legend()
 fig.autofmt_xdate()
 st.pyplot(fig)
 
-# Highlight spike window
-spike_mask = (np.array(block_times) > datetime(2025, 7, 17, 19, 45)) & (np.array(block_times) < datetime(2025, 7, 17, 19, 50))
-spike_efficiencies = np.array(gas_efficiencies)[spike_mask]
+gas_efficiencies_np = np.array(gas_efficiencies)
+valid_indices = np.where(~np.isnan(gas_efficiencies_np))[0]
 
-spike_indices = np.where(spike_mask)[0]
-max_idx = np.argmax(spike_efficiencies)
-block_with_max_eff = spike_indices[max_idx]
+if len(valid_indices) > 0:
+    # Find the index of the max gas efficiency
+    max_eff_index = valid_indices[np.argmax(gas_efficiencies_np[valid_indices])]
 
-st.write("📌 Block with Max Gas Efficiency:")
-st.write("Block Time:", block_times[block_with_max_eff])
-st.write("Gas Efficiency:", gas_efficiencies[block_with_max_eff])
+    st.write("📌 Block with Max Gas Efficiency:")
+    st.write("Block Time:", block_times[max_eff_index])
+    st.write("Gas Efficiency:", gas_efficiencies[max_eff_index])
+else:
+    st.write("⚠️ No valid gas efficiency data found.")
 
 # 7. 
 st.header("📊 Correlation: Gas Efficiency vs Transaction Count")
